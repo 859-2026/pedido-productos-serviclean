@@ -1,12 +1,361 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pedido Productos Serviclean</title>
+<title>Pedido Productos Servicelean</title>
+
+<style>
+
+body{
+font-family:Arial,sans-serif;
+background:#f4f7fb;
+margin:0;
+padding:0;
+}
+
+.container{
+max-width:760px;
+margin:auto;
+background:#fff;
+padding:20px;
+min-height:100vh;
+box-sizing:border-box;
+}
+
+.logo{
+text-align:center;
+margin-bottom:15px;
+}
+
+.logo img{
+max-width:360px;
+width:100%;
+height:auto;
+}
+
+h1{
+text-align:center;
+color:#27358f;
+margin:10px 0 4px;
+font-size:26px;
+}
+
+.subtitle{
+text-align:center;
+color:#29a9e1;
+margin-bottom:25px;
+font-weight:bold;
+}
+
+label{
+display:block;
+margin-top:10px;
+margin-bottom:8px;
+font-weight:bold;
+color:#27358f;
+}
+
+input{
+width:100%;
+padding:13px;
+border-radius:8px;
+border:1px solid #bfc7d1;
+font-size:16px;
+box-sizing:border-box;
+}
+
+.section-title{
+margin-top:25px;
+padding:10px;
+background:#27358f;
+color:white;
+border-radius:8px;
+font-weight:bold;
+text-align:center;
+}
+
+.product{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:10px;
+padding:10px;
+background:#f7faff;
+border:1px solid #e1e8f0;
+border-radius:8px;
+}
+
+.product-name{
+font-weight:bold;
+color:#222;
+flex:1;
+font-size:14px;
+}
+
+.qty-buttons{
+display:flex;
+gap:4px;
+flex-wrap:nowrap;
+}
+
+.qty-btn{
+width:34px;
+height:34px;
+border:none;
+border-radius:6px;
+background:#d9eaf8;
+color:#27358f;
+font-weight:bold;
+cursor:pointer;
+}
+
+.qty-btn.active{
+background:#29a9e1;
+color:white;
+}
+
+.send-btn{
+width:100%;
+margin-top:28px;
+padding:17px;
+border:none;
+border-radius:10px;
+background:#25D366;
+color:white;
+font-size:18px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.clear-btn{
+width:100%;
+margin-top:10px;
+padding:14px;
+border:none;
+border-radius:10px;
+background:#eee;
+color:#333;
+font-size:16px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.notice{
+margin-top:18px;
+font-size:13px;
+color:#555;
+text-align:center;
+}
+
+@media (max-width:520px){
+
+.container{
+padding:14px;
+}
+
+h1{
+font-size:22px;
+}
+
+.product{
+align-items:flex-start;
+flex-direction:column;
+}
+
+.qty-buttons{
+width:100%;
+justify-content:space-between;
+}
+
+.qty-btn{
+width:14%;
+height:38px;
+}
+
+}
+
+</style>
+
 </head>
+
 <body>
-<h1>Sistema actualizado correctamente</h1>
-<p>Archivo correcto: index.html</p>
+
+<div class="container">
+
+<div class="logo">
+<img src="logo_serviclean.png" alt="Servicelean">
+</div>
+
+<h1>PEDIDO PRODUCTOS</h1>
+
+<div class="subtitle">
+Sistema WhatsApp Servicelean
+</div>
+
+<label>OPERARIO</label>
+<input type="text" id="operaria" placeholder="Escribe tu nombre">
+
+<label>CLIENTE</label>
+<input type="text" id="cliente" placeholder="Escribe cliente">
+
+<div class="section-title">
+PRODUCTOS
+</div>
+
+<div id="productos"></div>
+
+<button class="send-btn" onclick="enviarWhatsapp()">
+ENVIAR PEDIDO POR WHATSAPP
+</button>
+
+<button class="clear-btn" onclick="limpiarFormulario()">
+LIMPIAR PEDIDO
+</button>
+
+<div class="notice">
+Los pedidos se envían automáticamente por WhatsApp
+</div>
+
+</div>
+
+<script>
+
+const productos = [
+
+"Papel Higiénico",
+"Papel Secamanos",
+"Lejía",
+"Friegasuelos",
+"Limpiacristales",
+"Desengrasante",
+"Ambientador",
+"Bayetas",
+"Guantes",
+"Bolsas Basura",
+"Jabón Manos",
+"Celulosa"
+
+];
+
+const cantidades = {};
+
+const productosDiv = document.getElementById('productos');
+
+function pintarProductos(){
+
+productosDiv.innerHTML='';
+
+productos.forEach(producto=>{
+
+const row=document.createElement('div');
+row.className='product';
+
+const name=document.createElement('div');
+name.className='product-name';
+name.innerText=producto;
+
+const buttons=document.createElement('div');
+buttons.className='qty-buttons';
+
+for(let i=0;i<=5;i++){
+
+const btn=document.createElement('button');
+
+btn.className='qty-btn';
+
+btn.innerText=i;
+
+btn.onclick=function(){
+
+cantidades[producto]=i;
+
+Array.from(buttons.children).forEach(b=>b.classList.remove('active'));
+
+btn.classList.add('active');
+
+};
+
+buttons.appendChild(btn);
+
+}
+
+row.appendChild(name);
+
+row.appendChild(buttons);
+
+productosDiv.appendChild(row);
+
+});
+
+}
+
+function enviarWhatsapp(){
+
+const operaria=document.getElementById('operaria').value.trim();
+
+const cliente=document.getElementById('cliente').value.trim();
+
+if(!operaria || !cliente){
+
+alert('Debe completar OPERARIO y CLIENTE.');
+
+return;
+
+}
+
+const seleccionados=Object.keys(cantidades).filter(p=>cantidades[p]>0);
+
+if(seleccionados.length===0){
+
+alert('Debe seleccionar al menos un producto.');
+
+return;
+
+}
+
+let texto='PEDIDO DE PRODUCTOS%0A%0A';
+
+texto+='OPERARIO: '+operaria+'%0A';
+
+texto+='CLIENTE: '+cliente+'%0A%0A';
+
+texto+='PRODUCTOS:%0A';
+
+seleccionados.forEach(p=>{
+
+texto+='- '+p+': '+cantidades[p]+'%0A';
+
+});
+
+texto+='%0AFECHA: '+new Date().toLocaleDateString('es-ES');
+
+const url='https://wa.me/34690150473?text='+texto;
+
+window.open(url,'_blank');
+
+}
+
+function limpiarFormulario(){
+
+document.getElementById('operaria').value='';
+
+document.getElementById('cliente').value='';
+
+for(let k in cantidades){
+
+delete cantidades[k];
+
+}
+
+pintarProductos();
+
+}
+
+pintarProductos();
+
+</script>
+
 </body>
 </html>
